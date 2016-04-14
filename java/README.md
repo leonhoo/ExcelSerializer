@@ -10,16 +10,57 @@ Automatic conversion between Excel data and T
 ```java
 public static void main(String[] args) {
   try {
+    /*********导入Excel数据********/
     String uri = "test.xls";//需要读取的xls文件,暂不支持xlsx文件
-    ExcelSerializer<Person> helper = new ExcelSerializer<Person>(Person.class);
-    List<Person> a = helper.load(uri);
+    ExcelSerializer<Person> deserializer = new ExcelSerializer<Person>(Person.class);
+    List<Person> a = deserializer.load(uri);
     System.out.println(a.size());
+    
+    /*********导出Excel文件********/
+    String uri = "testExport.xls";
+    ExcelSerializer<Person> personSerializer = new ExcelSerializer<Person>(Person.class);
+    List<Person> persons = new ArrayList<>();
+    Person person = new Person();
+    person.setAge(10);
+    person.setBirthday(new Date());
+    person.setIsMale(true);
+    person.setName("张三");
+    persons.add(person);
+    person = new Person();
+    person.setAge(20);
+    person.setBirthday(new Date());
+    person.setIsMale(true);
+    person.setName("李思");
+    persons.add(person);
+    person = new Person();
+    person.setAge(30);
+    person.setBirthday(new Date());
+    person.setIsMale(true);
+    person.setName("王武");
+    persons.add(person);
+    personSerializer.save(uri, persons, false);
+    // -------追加一个表-------
+    ExcelSerializer<House> houseSerializer = new ExcelSerializer<House>(House.class);
+    List<House> houses = new ArrayList<House>();
+    House house = new House();
+    house.setName("半岛国际");
+    house.setAddress("滨盛路与长河路交叉口");
+    houses.add(house);
+    house = new House();
+    house.setName("中南公寓");
+    house.setAddress("滨盛路与时代大道交叉口");
+    houses.add(house);
+    house = new House();
+    house.setName("锦绣江南");
+    house.setAddress("钱江四桥落桥处");
+    houses.add(house);
+    houseSerializer.save(uri, houses, 1, true);
   } catch (Exception e) {
     e.printStackTrace();
   }
 }
 ```
-## 实体类
+## Person实体类
 ```java
 import java.util.Date;
 
@@ -93,6 +134,43 @@ public class Person {
 		this.isMale = isMale;
 	}
 }
+```
+## House实体类
+```java
+import net.leonhoo.tools.excel.serializer.annotation.Index;
+import net.leonhoo.tools.excel.serializer.annotation.Width;
+import net.leonhoo.tools.excel.serializer.annotation.Display;
+
+@Display("房子")
+public class House {
+
+	@Display("小区名称")
+	@Index(0)
+	private String name;
+
+	@Display("地址")
+	@Index(1)
+	@Width(30)
+	private String address;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+}
+
 ```
 ## 时间值转换类
 ```java
